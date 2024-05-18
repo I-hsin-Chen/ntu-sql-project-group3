@@ -1,4 +1,4 @@
-python3 maqp.py --evaluate_cardinalities ^
+python maqp.py --evaluate_cardinalities ^
     --rdc_spn_selection ^
     --max_variants 1 ^
     --pairwise_rdc_path ../imdb-benchmark/spn_ensembles/pairwise_rdc.pkl ^
