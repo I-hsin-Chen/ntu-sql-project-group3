@@ -14,6 +14,14 @@ python maqp.py --get_cardinality ^
     --pairwise_rdc_path ../imdb-benchmark/spn_ensembles/pairwise_rdc.pkl ^
     --dataset imdb-light ^
     --ensemble_location ../imdb-benchmark/spn_ensembles/ensemble_relationships_imdb-light_1000000.pkl ^
-    --query_file_location ./benchmarks/job-light/sql/job_light_queries.sql
+    --query_file_location ./benchmarks/job-light/sql/job_light_queries.sql ^
+    --query "SELECT COUNT(*) FROM movie_companies mc, title t WHERE t.id = mc.movie_id AND mc.company_type_id = 2;"
 
 baselines\aqp\results 刪了一個資料夾
+
+SELECT * FROM 
+    (SELECT * FROM
+        movie_info_idx mi_idx, 
+        (SELECT * FROM movie_companies mc, title t WHERE t.id = mc.movie_id AND mc.company_type_id = 2) mc_t
+    ) mi_idx_mc_t
+WHERE mi_idx_mc_t.info_type_id = 112;
