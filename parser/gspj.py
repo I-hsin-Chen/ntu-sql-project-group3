@@ -73,6 +73,7 @@ def greedy_selective_pairwise_join(query):
             other_tables = [table for table in tables if table not in (table1, table2)]
             node_pairs[(table1, table2)] = extract_related_conditions(conditions, table1, table2, other_tables)
             print(f'Conditions related to {table1} and {table2}: {node_pairs[(table1, table2)]}')
+        
     
         # Estimating cardinality for each table pair (node pair)
         for node_pair in node_pairs:
