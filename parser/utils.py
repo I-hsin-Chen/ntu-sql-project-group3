@@ -23,7 +23,7 @@ def to_cross_join(query):
     '''
     Convert the given query to a cross join query.
     '''
-    return query.replace(', ', ' CROSS JOIN ')
+    return query.replace(',', ' CROSS JOIN ')
 
 
 def extract_tables_and_conditions(query):

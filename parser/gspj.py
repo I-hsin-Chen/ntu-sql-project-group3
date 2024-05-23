@@ -1,11 +1,7 @@
 import re
 import itertools
 from sqlalchemy import create_engine, text
-
-import sys
-import os
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from utils import to_cross_join, extract_tables_and_conditions, extract_related_conditions, cardinality_estimation
+from utils import *
 
 def greedy_selective_pairwise_join(query):
     '''
@@ -37,31 +33,45 @@ def greedy_selective_pairwise_join(query):
         print(f'Best join is between {best_combination[0]} and {best_combination[1]} with cardinality {cardinalities[best_combination]}')
         
         table1, table2 = best_combination
+        if node_pairs[best_combination] == []:
+            raise Exception(f'Parsing error : No conditions found for joining {table1} and {table2}')
         match_condition = ' AND '.join(node_pairs[best_combination])
-        subquery = f'(SELECT * FROM {table1[0]} {table1[1]}, {table2[0]} {table2[1]} WHERE {match_condition})' \
-            if match_condition else f'(SELECT * FROM {table1[0]} {table1[1]}, {table2[0]} {table2[1]})'
         combined_alias = f"{table1[1]}_{table2[1]}"
+        
+        # Remove the conditions that are already used in the best combination
+        conditions = [c for c in conditions if c not in node_pairs[best_combination]]
+        
+        # Update the all the aliases in the remaining conditions
+        selected_columns = []
+        for i, condition in enumerate(conditions):
+            for t in (table1, table2):
+                match = re.search(r'{}\.(\w+)'.format(t[1]), condition, re.IGNORECASE)
+                if match:
+                    # column_alias : Alias of a column in the subquery, Ex : t.id --> t_id
+                    column_alias = "_".join(match.group().split('.'))
+                    
+                    # selected_columns : columns be selected in the subquery, Ex : SELECT t.id t_id FROM ...
+                    selected_columns.append(f'{match.group()} {column_alias}')
+                    
+                    # if the column will be used by the outer query, then replace the column name with the alias
+                    conditions[i] = conditions[i].replace(match.group(), f'{combined_alias}.{column_alias}') \
+                        if match.group() in conditions[i] \
+                        else re.sub(r'{}\.(\w+)'.format(t[1]), f'{combined_alias}.\\1', conditions[i])
+        
+        selected_columns = ','.join(selected_columns)
+        subquery = f'(SELECT {selected_columns} FROM {table1[0]} {table1[1]}, {table2[0]} {table2[1]} WHERE {match_condition})' \
+            if selected_columns \
+            else f'(SELECT * FROM {table1[0]} {table1[1]}, {table2[0]} {table2[1]} WHERE {match_condition})'
         
         new_table = (subquery, combined_alias)
         tables.remove(table1)
         tables.remove(table2)
         tables.append(new_table)
         
-        # Remove the conditions that are already used in the best combination
-        # Update the table alias in the remaining conditions
-        conditions = [c for c in conditions if c not in node_pairs[best_combination]]
-        for i, condition in enumerate(conditions):
-            match_t1 = re.search(r'{}\.'.format(table1[1]), condition, re.IGNORECASE)
-            match_t2 = re.search(r'{}\.'.format(table2[1]), condition, re.IGNORECASE)
-            if match_t1:
-                conditions[i] = re.sub(r'{}\.(\w+)'.format(table1[1]), f'{combined_alias}.\\1', conditions[i])
-            if match_t2:
-                conditions[i] = re.sub(r'{}\.(\w+)'.format(table2[1]), f'{combined_alias}.\\1', conditions[i])
-        
-        # If there are only two tables left, then just simply join them and return the final query
+        # If there are only two tables left, then simply join them and return the final query
         if len(tables) == 2:
             remaining_conditions = ' AND '.join(conditions)
-            final_query = f'SELECT COUNT(*) FROM {tables[0][0]} {tables[0][1]}, {tables[1][0]} {tables[1][1]} WHERE {remaining_conditions};' \
+            final_query = f'SELECT COUNT(*) \nFROM {tables[0][0]} {tables[0][1]}, {tables[1][0]} {tables[1][1]} \nWHERE \n{remaining_conditions};' \
                 if remaining_conditions else f'SELECT COUNT(*) FROM {tables[0][0]} {tables[0][1]}, {tables[1][0]} {tables[1][1]};'
             
             final_query = to_cross_join(final_query)
@@ -74,9 +84,7 @@ def greedy_selective_pairwise_join(query):
 
 if __name__ == '__main__':
     query = """
-SELECT COUNT(*) 
-FROM 
-movie_companies mc,title t,movie_keyword mk 
-WHERE t.id=mc.movie_id AND t.id=mk.movie_id AND mk.keyword_id=117;
+SELECT COUNT(*) FROM movie_keyword mk,title t,cast_info ci WHERE t.id=mk.movie_id AND t.id=ci.movie_id AND t.production_year>2014 AND mk.keyword_id=8200;
 """
+    print("The original query is :" + to_cross_join(query))
     greedy_selective_pairwise_join(query)
