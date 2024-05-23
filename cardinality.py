@@ -9,6 +9,9 @@ def get_cardinality(ensemble_location, query, schema,
                     rdc_spn_selection, pairwise_rdc_path, use_generated_code=False,
                     max_variants=1, merge_indicator_exp=False, exploit_overlapping=False):
     
+    if schema is None:
+        from schemas.imdb.schema import gen_job_light_imdb_schema
+        schema = gen_job_light_imdb_schema('../ssb-benchmark') 
     spn_ensemble = read_ensemble(ensemble_location, build_reverse_dict=True)
     
     query_str = query.strip()
