@@ -135,3 +135,8 @@ bar.pdf
 optimized_inference.cpp
 compiled/
 .DS_Store
+
+# other stuffs
+run.sh
+test.csv
+imdb-benchmark/
