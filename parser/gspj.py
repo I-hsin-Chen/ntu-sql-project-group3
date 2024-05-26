@@ -30,7 +30,7 @@ def greedy_selective_pairwise_join(query):
             cardinalities[(table1, table2)] = cardinality_estimation(query)
         
         best_combination = min(cardinalities, key=cardinalities.get)
-        print(f'Best join is between {best_combination[0]} and {best_combination[1]} with cardinality {cardinalities[best_combination]}')
+        # print(f'Best join is between {best_combination[0]} and {best_combination[1]} with cardinality {cardinalities[best_combination]}')
         
         table1, table2 = best_combination
         if node_pairs[best_combination] == []:
@@ -57,7 +57,7 @@ def greedy_selective_pairwise_join(query):
                     conditions[i] = conditions[i].replace(match.group(), f'{combined_alias}.{column_alias}') \
                         if match.group() in conditions[i] \
                         else re.sub(r'{}\.(\w+)'.format(t[1]), f'{combined_alias}.\\1', conditions[i])
-        
+                    
         selected_columns = ','.join(selected_columns)
         subquery = f'(SELECT {selected_columns} FROM {table1[0]} {table1[1]}, {table2[0]} {table2[1]} WHERE {match_condition})' \
             if selected_columns \
@@ -84,7 +84,7 @@ def greedy_selective_pairwise_join(query):
 
 if __name__ == '__main__':
     query = """
-SELECT COUNT(*) FROM movie_keyword mk,title t,cast_info ci WHERE t.id=mk.movie_id AND t.id=ci.movie_id AND t.production_year>2014 AND mk.keyword_id=8200;
+SELECT COUNT(*) FROM movie_companies mc,title t,movie_info_idx mi_idx WHERE t.id=mc.movie_id AND t.id=mi_idx.movie_id AND mi_idx.info_type_id=112 AND mc.company_type_id=2;
 """
     print("The original query is :" + to_cross_join(query))
     greedy_selective_pairwise_join(query)

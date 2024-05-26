@@ -18,12 +18,28 @@ def cardinality_estimation(query):
     cardinality = get_cardinality(ensemble_location, query, None, rdc_spn_selection, pairwise_rdc_path)
     return cardinality
 
-
-def to_cross_join(query):
+def to_cross_join(sql_query):
     '''
     Convert the given query to a cross join query.
     '''
-    return query.replace(',', ' CROSS JOIN ')
+    
+    # Regular expression to match the FROM clause and capture its content
+    from_clause_pattern = r'FROM\s+([^;]+)WHERE'
+    matches = re.search(from_clause_pattern, sql_query, re.IGNORECASE)
+    
+    if matches:
+        from_clause = matches.group(1)
+        # Split the FROM clause by commas not enclosed in parentheses
+        tables = re.split(r',(?![^()]*\))', from_clause)
+        # Recursively convert each subquery to a cross join query
+        tables = [to_cross_join(table) for table in tables]
+        cross_join_clause = ' CROSS JOIN '.join(tables)
+        
+        # Replace the old FROM clause with the new one
+        new_sql_query = re.sub(from_clause_pattern, f'FROM {cross_join_clause}WHERE', sql_query, flags=re.IGNORECASE)
+        return new_sql_query
+    else:
+        return sql_query
 
 
 def extract_tables_and_conditions(query):
