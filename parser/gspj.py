@@ -75,16 +75,15 @@ def greedy_selective_pairwise_join(query):
                 if remaining_conditions else f'SELECT COUNT(*) FROM {tables[0][0]} {tables[0][1]}, {tables[1][0]} {tables[1][1]};'
             
             final_query = to_cross_join(final_query)
-            print("The final result is :\n" + final_query)
+            # print("The final result is :\n" + final_query)
+            return final_query
             break
-        
-        return final_query
-    
 
 
 if __name__ == '__main__':
     query = """
-SELECT COUNT(*) FROM movie_companies mc,title t,movie_info_idx mi_idx WHERE t.id=mc.movie_id AND t.id=mi_idx.movie_id AND mi_idx.info_type_id=112 AND mc.company_type_id=2;
-"""
+    SELECT COUNT(*) FROM movie_keyword mk,title t,cast_info ci WHERE t.id=mk.movie_id AND t.id=ci.movie_id AND t.production_year>2010 AND mk.keyword_id=8200;
+    """
     print("The original query is :" + to_cross_join(query))
-    greedy_selective_pairwise_join(query)
+    gspj_query = greedy_selective_pairwise_join(query)
+    print("The GSPJ query is :\n" + gspj_query)

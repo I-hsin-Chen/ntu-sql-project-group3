@@ -140,3 +140,4 @@ compiled/
 run.sh
 test.csv
 imdb-benchmark/
+imdb.db

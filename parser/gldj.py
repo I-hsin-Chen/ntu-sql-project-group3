@@ -65,7 +65,7 @@ def greedy_left_deep_join(query):
     while True:
         if(len(tables) == 1):
             output_query += f' CROSS JOIN {tables[0][0]} {tables[0][1]} WHERE {complete_conditions};'
-            print(output_query)
+            return output_query
             break
 
         cardinalities = {}
@@ -117,14 +117,8 @@ def greedy_left_deep_join(query):
 
 if __name__ == '__main__':
     query = """
-    SELECT COUNT(*) 
-    FROM 
-    movie_companies mc,title t,movie_keyword mk 
-    WHERE t.id=mc.movie_id AND t.id=mk.movie_id AND mk.keyword_id=117;
+    SELECT COUNT(*) FROM movie_keyword mk,title t,cast_info ci WHERE t.id=mk.movie_id AND t.id=ci.movie_id AND t.production_year>2010 AND mk.keyword_id=8200;
     """
-    # query = """
-    # SELECT COUNT(*)
-    # FROM t1 t1, t2 t2, t3 t3, t4 t4
-    # WHERE t1.id = t2.id AND t2.id = t3.id AND t3.id = t4.id AND t1.id = 1;
-    # """
-    greedy_left_deep_join(query)
+    print("The original query is :" + to_cross_join(query))
+    gldj_query = greedy_left_deep_join(query)
+    print("The GLDJ query is :\n" + gldj_query)
