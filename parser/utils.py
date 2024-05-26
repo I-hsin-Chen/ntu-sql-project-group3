@@ -33,7 +33,7 @@ def to_cross_join(sql_query):
         tables = re.split(r',(?![^()]*\))', from_clause)
         # Recursively convert each subquery to a cross join query
         tables = [to_cross_join(table) for table in tables]
-        cross_join_clause = ' CROSS JOIN '.join(tables)
+        cross_join_clause = ' CROSS JOIN\n'.join(tables)
         
         # Replace the old FROM clause with the new one
         new_sql_query = re.sub(from_clause_pattern, f'FROM {cross_join_clause}WHERE', sql_query, flags=re.IGNORECASE)
@@ -99,3 +99,45 @@ def extract_related_conditions(conditions, table1, table2, other_tables):
                     related_conditions.append(condition)
 
     return related_conditions
+
+def extract_related_conditions_for_flatten(conditions, excluded_tables):
+    
+    related_conditions = []
+    for condition in conditions:
+        for excluded_table in excluded_tables:
+            if re.search(r'{}\.'.format(excluded_table[1]), condition, re.IGNORECASE):
+                break
+            if excluded_table == excluded_tables[-1]:
+                related_conditions.append(condition)
+
+    return related_conditions
+
+def flatten(nested_query, original_query):
+    '''
+    Flatten the nested query to a single query.
+    '''
+    tables, conditions = extract_tables_and_conditions(original_query)
+    nested_tables, _ = extract_tables_and_conditions(nested_query)
+    other_tables = [table for table in tables if table not in nested_tables]
+    related_conditions = extract_related_conditions_for_flatten(conditions, other_tables)
+    
+    table_string = ', '.join([f'{table[0]} {table[1]}' for table in nested_tables])
+    condition_string = ' AND '.join(related_conditions)  
+    flattened_query = f'SELECT COUNT(*) FROM {table_string} WHERE {condition_string};'
+    
+    # print(nested_query)
+    # print(flattened_query)
+    return flattened_query
+    
+    
+
+if __name__ == '__main__':
+    nested_query = """
+SELECT COUNT(*) FROM movie_info mi, (SELECT t.id t_id,t.id t_id FROM title t, movie_info_idx mi_idx WHERE t.id=mi_idx.movie_id AND 
+t.production_year>2010 AND t.kind_id=1 AND mi_idx.info_type_id=101) t_mi_idx WHERE t_mi_idx.t_id=mi.movie_id AND mi.info_type_id=8;
+"""
+
+    original_query = """
+SELECT COUNT(*) FROM title t,movie_info mi,movie_info_idx mi_idx,movie_keyword mk WHERE t.id=mi.movie_id AND t.id=mk.movie_id AND t.id=mi_idx.movie_id AND t.production_year>2010 AND t.kind_id=1 AND mi.info_type_id=8 AND mi_idx.info_type_id=101;
+    """
+    print(flatten(nested_query, original_query))

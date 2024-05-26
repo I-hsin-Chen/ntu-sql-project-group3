@@ -3,6 +3,10 @@ import itertools
 from sqlalchemy import create_engine, text
 from utils import *
 
+def remove_duplicates(lst):
+    seen = set()
+    return [x for x in lst if not (x in seen or seen.add(x))]
+
 def greedy_selective_pairwise_join(query):
     '''
     This function performs a greedy selective pairwise join (GSPJ) on the given query.
@@ -10,6 +14,7 @@ def greedy_selective_pairwise_join(query):
     '''
     
     # Extract all the tables and conditions from the query
+    original_query = query
     tables, conditions = extract_tables_and_conditions(query)
     
     while True:
@@ -27,7 +32,8 @@ def greedy_selective_pairwise_join(query):
             table1, table2 = node_pair
             condition = ' AND '.join(node_pairs[node_pair])
             query = f'SELECT COUNT(*) FROM {table1[0]} {table1[1]}, {table2[0]} {table2[1]} WHERE {condition};'
-            cardinalities[(table1, table2)] = cardinality_estimation(query)
+            cardinalities[(table1, table2)] = cardinality_estimation(query) if query.upper().count("SELECT") == 1 \
+                else cardinality_estimation(flatten(query, original_query))
         
         best_combination = min(cardinalities, key=cardinalities.get)
         # print(f'Best join is between {best_combination[0]} and {best_combination[1]} with cardinality {cardinalities[best_combination]}')
@@ -58,10 +64,10 @@ def greedy_selective_pairwise_join(query):
                         if match.group() in conditions[i] \
                         else re.sub(r'{}\.(\w+)'.format(t[1]), f'{combined_alias}.\\1', conditions[i])
                     
-        selected_columns = ','.join(selected_columns)
-        subquery = f'(SELECT {selected_columns} FROM {table1[0]} {table1[1]}, {table2[0]} {table2[1]} WHERE {match_condition})' \
+        selected_columns = ','.join(remove_duplicates(selected_columns))
+        subquery = f'(SELECT {selected_columns} FROM {table1[0]} {table1[1]},{table2[0]} {table2[1]}\nWHERE {match_condition})' \
             if selected_columns \
-            else f'(SELECT * FROM {table1[0]} {table1[1]}, {table2[0]} {table2[1]} WHERE {match_condition})'
+            else f'(SELECT * FROM {table1[0]} {table1[1]},{table2[0]} {table2[1]} WHERE {match_condition})'
         
         new_table = (subquery, combined_alias)
         tables.remove(table1)
@@ -71,19 +77,18 @@ def greedy_selective_pairwise_join(query):
         # If there are only two tables left, then simply join them and return the final query
         if len(tables) == 2:
             remaining_conditions = ' AND '.join(conditions)
-            final_query = f'SELECT COUNT(*) \nFROM {tables[0][0]} {tables[0][1]}, {tables[1][0]} {tables[1][1]} \nWHERE \n{remaining_conditions};' \
-                if remaining_conditions else f'SELECT COUNT(*) FROM {tables[0][0]} {tables[0][1]}, {tables[1][0]} {tables[1][1]};'
+            final_query = f'SELECT COUNT(*) \nFROM {tables[0][0]} {tables[0][1]},{tables[1][0]} {tables[1][1]} \nWHERE \n{remaining_conditions};' \
+                if remaining_conditions else f'SELECT COUNT(*) FROM {tables[1][0]} {tables[1][1]},{tables[0][0]} {tables[0][1]};'
             
             final_query = to_cross_join(final_query)
             # print("The final result is :\n" + final_query)
             return final_query
-            break
 
 
 if __name__ == '__main__':
     query = """
-    SELECT COUNT(*) FROM movie_keyword mk,title t,cast_info ci WHERE t.id=mk.movie_id AND t.id=ci.movie_id AND t.production_year>2010 AND mk.keyword_id=8200;
-    """
+SELECT COUNT(*) FROM title t,movie_info mi,movie_info_idx mi_idx,movie_keyword mk WHERE t.id=mi.movie_id AND t.id=mk.movie_id AND t.id=mi_idx.movie_id AND t.production_year>2010 AND t.kind_id=1 AND mi.info_type_id=8 AND mi_idx.info_type_id=101;
+"""
     print("The original query is :" + to_cross_join(query))
     gspj_query = greedy_selective_pairwise_join(query)
     print("The GSPJ query is :\n" + gspj_query)
