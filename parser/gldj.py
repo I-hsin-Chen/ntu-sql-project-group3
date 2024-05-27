@@ -31,7 +31,8 @@ def greedy_left_deep_join(query):
     for node_pair in node_pairs:
         table1, table2 = node_pair
         condition = ' AND '.join(node_pairs[node_pair])
-        query = f'SELECT COUNT(*) FROM {table1[0]} {table1[1]}, {table2[0]} {table2[1]} WHERE {condition};'
+        query = f'SELECT COUNT(*) FROM {table1[0]} {table1[1]}, {table2[0]} {table2[1]} WHERE {condition};' if condition \
+            else f'SELECT COUNT(*) FROM {table1[0]} {table1[1]}, {table2[0]} {table2[1]};'
         # for testing purposes, generate random cardinalities temporarily
         cardinalities[(table1, table2)] = cardinality_estimation(query)
     
@@ -71,9 +72,8 @@ def greedy_left_deep_join(query):
             condition = ' AND '.join(node_pairs[node_pair])
             
             table1_sp = table1[0].split(' WHERE ')
-
-            query = f'SELECT COUNT(*) FROM {table1_sp[0]} CROSS JOIN {table2[0]} {table2[1]} WHERE {condition};'
-            
+            query = f'SELECT COUNT(*) FROM {table1_sp[0]} CROSS JOIN {table2[0]} {table2[1]} WHERE {condition};' if condition \
+                else f'SELECT COUNT(*) FROM {table1_sp[0]} CROSS JOIN {table2[0]} {table2[1]};'
             # for testing purposes, generate random cardinalities temporarily
             cardinalities[(table1, table2)] = cardinality_estimation(query)
         
@@ -83,8 +83,8 @@ def greedy_left_deep_join(query):
         
         table1, table2 = best_combination
         match_condition = ' AND '.join(node_pairs[best_combination])
-        subquery = f'SELECT * FROM {table1[0]} {table1[1]}, {table2[0]} {table2[1]} WHERE {match_condition}' \
-            if match_condition else f'(SELECT * FROM {table1[0]} {table1[1]}, {table2[0]} {table2[1]})'
+        subquery = f'{table1[0]} {table1[1]} CROSS JOIN {table2[0]} {table2[1]} WHERE {match_condition}' \
+        if match_condition else f'{table1[0]} {table1[1]} CROSS JOIN {table2[0]} {table2[1]}'
         combined_alias = f"{table1[1]}_{table2[1]}"
         
         new_table = (subquery, combined_alias)
