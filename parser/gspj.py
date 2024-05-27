@@ -12,10 +12,12 @@ def greedy_selective_pairwise_join(query):
     This function performs a greedy selective pairwise join (GSPJ) on the given query.
     The returned query is the final query after performing GSPJ.
     '''
-    
+    IS_LEFT_JOIN = False
     # Extract all the tables and conditions from the query
     original_query = query
     tables, conditions = extract_tables_and_conditions(query)
+    if len(tables) > 3:
+        IS_LEFT_JOIN = True
     
     while True:
         cardinalities = {}
@@ -77,17 +79,19 @@ def greedy_selective_pairwise_join(query):
         # If there are only two tables left, then simply join them and return the final query
         if len(tables) == 2:
             remaining_conditions = ' AND '.join(conditions)
-            final_query = f'SELECT COUNT(*) \nFROM {tables[0][0]} {tables[0][1]},{tables[1][0]} {tables[1][1]} \nWHERE \n{remaining_conditions};' \
-                if remaining_conditions else f'SELECT COUNT(*) FROM {tables[1][0]} {tables[1][1]},{tables[0][0]} {tables[0][1]};'
+            if remaining_conditions :
+                final_query = f'SELECT COUNT(*) \nFROM {tables[1][0]} {tables[1][1]},{tables[0][0]} {tables[0][1]} \nWHERE \n{remaining_conditions};'\
+                    if IS_LEFT_JOIN else f'SELECT COUNT(*) \nFROM {tables[0][0]} {tables[0][1]},{tables[1][0]} {tables[1][1]} \nWHERE \n{remaining_conditions};'
+            else :
+                raise Exception(f'Parsing error : No conditions found for joining tables in the final query') 
             
             final_query = to_cross_join(final_query)
-            # print("The final result is :\n" + final_query)
             return final_query
 
 
 if __name__ == '__main__':
     query = """
-SELECT COUNT(*) FROM title t,movie_info mi,movie_info_idx mi_idx,movie_keyword mk WHERE t.id=mi.movie_id AND t.id=mk.movie_id AND t.id=mi_idx.movie_id AND t.production_year>2010 AND t.kind_id=1 AND mi.info_type_id=8 AND mi_idx.info_type_id=101;
+SELECT COUNT(*) FROM title t,cast_info ci,movie_info_idx mi_idx WHERE t.id=ci.movie_id AND t.id=mi_idx.movie_id AND t.kind_id=1 AND t.production_year<1959;
 """
     print("The original query is :" + to_cross_join(query))
     gspj_query = greedy_selective_pairwise_join(query)

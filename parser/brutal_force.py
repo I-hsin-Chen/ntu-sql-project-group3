@@ -65,9 +65,14 @@ def Brutal_Force(query):
                             else re.sub(r'{}\.(\w+)'.format(t[1]), f'{combined_alias}.\\1', conditions[i])
 
             selected_columns = ','.join(selected_columns)
-            subquery = f'(SELECT {selected_columns} FROM {table1[0]} {table1[1]}, {table2[0]} {table2[1]} WHERE {match_condition})' \
-                if selected_columns \
-                else f'(SELECT * FROM {table1[0]} {table1[1]}, {table2[0]} {table2[1]} WHERE {match_condition})'
+            if match_condition:
+                subquery = f'(SELECT {selected_columns} FROM {table1[0]} {table1[1]}, {table2[0]} {table2[1]} WHERE {match_condition})' \
+                    if selected_columns \
+                    else f'(SELECT * FROM {table1[0]} {table1[1]}, {table2[0]} {table2[1]} WHERE {match_condition})'
+            else:
+                subquery = f'(SELECT {selected_columns} FROM {table1[0]} {table1[1]}, {table2[0]} {table2[1]})' \
+                    if selected_columns \
+                    else f'(SELECT * FROM {table1[0]} {table1[1]}, {table2[0]} {table2[1]})'
 
             new_table = (subquery, combined_alias)
             tables.remove(table1)
@@ -88,14 +93,15 @@ def Brutal_Force(query):
 
 if __name__ == '__main__':
     query = """
-SELECT COUNT(*) FROM title t,cast_info ci,movie_info_idx mi_idx WHERE t.id=ci.movie_id AND t.id=mi_idx.movie_id AND t.kind_id=1 AND t.production_year<1959;    """
-    print("The original query is :" + to_cross_join(query))
+SELECT COUNT(*) FROM title t,cast_info ci,movie_info_idx mi_idx WHERE t.id=ci.movie_id AND t.id=mi_idx.movie_id AND t.kind_id=1 AND t.production_year<1959;
+"""
     all_possible_query = Brutal_Force(query)
-
     print("possible query : ")
-    with open('./bf_output/output.txt', 'w') as file:
-        for query in all_possible_query:
-            file.write(query + '\n')
-            print(query)
+    print (all_possible_query)
+
+    # with open('./bf_output/output.txt', 'w') as file:
+    #     for query in all_possible_query:
+    #         file.write(query + '\n')
+    #         print(query)
     
     
