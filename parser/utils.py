@@ -24,9 +24,8 @@ def to_cross_join(sql_query):
     '''
     
     # Regular expression to match the FROM clause and capture its content
-    from_clause_pattern = r'FROM\s+([^;]+)WHERE'
+    from_clause_pattern = r'FROM\s+([^;()]+)WHERE'
     matches = re.search(from_clause_pattern, sql_query, re.IGNORECASE)
-    
     if matches:
         from_clause = matches.group(1)
         # Split the FROM clause by commas not enclosed in parentheses
@@ -129,7 +128,9 @@ def flatten(nested_query, original_query):
     # print(flattened_query)
     return flattened_query
     
-    
+def remove_duplicates(lst):
+    seen = set()
+    return [x for x in lst if not (x in seen or seen.add(x))]
 
 if __name__ == '__main__':
     nested_query = """

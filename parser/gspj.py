@@ -3,10 +3,6 @@ import itertools
 from sqlalchemy import create_engine, text
 from utils import *
 
-def remove_duplicates(lst):
-    seen = set()
-    return [x for x in lst if not (x in seen or seen.add(x))]
-
 def greedy_selective_pairwise_join(query):
     '''
     This function performs a greedy selective pairwise join (GSPJ) on the given query.

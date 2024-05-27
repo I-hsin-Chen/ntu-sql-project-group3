@@ -20,7 +20,10 @@ def Brutal_Force(query):
             remaining_conditions = ' AND '.join(conditions)
             final_query = f'SELECT COUNT(*) \nFROM {tables[0][0]} {tables[0][1]}, {tables[1][0]} {tables[1][1]} \nWHERE \n{remaining_conditions};' \
                 if remaining_conditions else f'SELECT COUNT(*) FROM {tables[0][0]} {tables[0][1]}, {tables[1][0]} {tables[1][1]};'
+            # print("Before Cross Join : " + final_query)
             final_query = to_cross_join(final_query)
+            # print("After Cross Join : " + final_query)
+            # print("=====================================")
             final_query = final_query.replace('\n', ' ').replace('  ', ' ')
 
             query_list.append(final_query)
@@ -64,7 +67,7 @@ def Brutal_Force(query):
                             if match.group() in conditions[i] \
                             else re.sub(r'{}\.(\w+)'.format(t[1]), f'{combined_alias}.\\1', conditions[i])
 
-            selected_columns = ','.join(selected_columns)
+            selected_columns = ','.join(remove_duplicates(selected_columns))
             if match_condition:
                 subquery = f'(SELECT {selected_columns} FROM {table1[0]} {table1[1]}, {table2[0]} {table2[1]} WHERE {match_condition})' \
                     if selected_columns \
@@ -93,8 +96,7 @@ def Brutal_Force(query):
 
 if __name__ == '__main__':
     query = """
-SELECT COUNT(*) FROM title t,cast_info ci,movie_info_idx mi_idx WHERE t.id=ci.movie_id AND t.id=mi_idx.movie_id AND t.kind_id=1 AND t.production_year<1959;
-"""
+SELECT COUNT(*) FROM title t,movie_info mi,movie_info_idx mi_idx,cast_info ci,movie_keyword mk WHERE t.id=mi.movie_id AND t.id=mi_idx.movie_id AND t.id=ci.movie_id AND t.id=mk.movie_id AND mi.info_type_id=3 AND mi_idx.info_type_id=100 AND t.production_year>2010;"""
     all_possible_query = Brutal_Force(query)
     print("possible query : ")
     print (all_possible_query)
