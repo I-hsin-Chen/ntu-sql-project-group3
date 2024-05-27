@@ -20,6 +20,9 @@ def greedy_selective_pairwise_join(query):
         IS_LEFT_JOIN = True
     
     while True:
+        if(len(tables) == 1):
+            return tables[0][0].strip("()") + ";"
+        
         cardinalities = {}
         node_pairs = {}
         

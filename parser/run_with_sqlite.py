@@ -32,23 +32,29 @@ if __name__ == '__main__':
         """
     ]
 
-    for query in queries:
-        original_result, original_time = execute_a_query(query)
-        print("The original query:")
-        print("Time:", original_time)
-        print("Result:", original_result, '\n')
+    queries = [
+        "SELECT COUNT(*) FROM title t,movie_info mi,movie_info_idx mi_idx,movie_companies mc WHERE t.id=mi.movie_id AND t.id=mi_idx.movie_id AND t.id=mc.movie_id AND mi_idx.info_type_id=113 AND mi.info_type_id=105;"
+    ]
 
-        gspj_query = greedy_selective_pairwise_join(query)
-        gspj_query_result, gspj_query_time = execute_a_query(gspj_query)
-        print("The GSPJ query:")
-        print("Time:", gspj_query_time)
-        print("Result:", gspj_query_result, '\n')
+    for query in queries:
+        # original_result, original_time = execute_a_query(query)
+        # print("The original query:")
+        # print("Time:", original_time)
+        # print("Result:", original_result, '\n')
+
+        # gspj_query = greedy_selective_pairwise_join(query)
+        # gspj_query_result, gspj_query_time = execute_a_query(gspj_query)
+        # print("The GSPJ query:")
+        # print("Time:", gspj_query_time)
+        # print("Result:", gspj_query_result, '\n')
 
         gldj_query = greedy_left_deep_join(query)
+        print(gldj_query)
         gldj_query_result, gldj_query_time = execute_a_query(gldj_query)
         print("The GLDJ query:")
         print("Time:", gldj_query_time)
         print("Result:", gldj_query_result, '\n')
+        exit()
 
         all_possible_query = Brutal_Force(query)
         bf_min_time = float('inf')
