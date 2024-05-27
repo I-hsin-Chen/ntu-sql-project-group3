@@ -35,8 +35,8 @@ def Brutal_Force(query):
                 table for table in tables if table not in (table1, table2)]
             node_pairs[(table1, table2)] = extract_related_conditions(
                 conditions, table1, table2, other_tables)
-            if node_pairs[(table1, table2)] == []:
-                raise Exception(f'Parsing error : No conditions found for joining {table1} and {table2}')
+            # if node_pairs[(table1, table2)] == []:
+            #     raise Exception(f'Parsing error : No conditions found for joining {table1} and {table2}')
 
             match_condition = ' AND '.join(node_pairs[(table1, table2)])
             combined_alias = f"{table1[1]}_{table2[1]}"
@@ -88,8 +88,7 @@ def Brutal_Force(query):
 
 if __name__ == '__main__':
     query = """
-    SELECT COUNT(*) FROM movie_keyword mk,title t,cast_info ci WHERE t.id=mk.movie_id AND t.id=ci.movie_id AND t.production_year>2014 AND mk.keyword_id=8200;
-    """
+SELECT COUNT(*) FROM title t,cast_info ci,movie_info_idx mi_idx WHERE t.id=ci.movie_id AND t.id=mi_idx.movie_id AND t.kind_id=1 AND t.production_year<1959;    """
     print("The original query is :" + to_cross_join(query))
     all_possible_query = Brutal_Force(query)
 
