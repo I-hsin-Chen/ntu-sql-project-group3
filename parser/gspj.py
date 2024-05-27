@@ -69,10 +69,10 @@ def greedy_selective_pairwise_join(query):
                         if match.group() in conditions[i] \
                         else re.sub(r'{}\.(\w+)'.format(t[1]), f'{combined_alias}.\\1', conditions[i])
                     
-        selected_columns = ','.join(remove_duplicates(selected_columns))
-        subquery = f'(SELECT {selected_columns} FROM {table1[0]} {table1[1]},{table2[0]} {table2[1]}\nWHERE {match_condition})' \
-            if selected_columns \
-            else f'(SELECT * FROM {table1[0]} {table1[1]},{table2[0]} {table2[1]} WHERE {match_condition})'
+        selected_columns = ','.join(remove_duplicates(selected_columns)) if selected_columns else "*"
+        subquery = f'(SELECT {selected_columns} FROM {table2[0]} {table2[1]},{table1[0]} {table1[1]}\nWHERE {match_condition})' \
+            if IS_LEFT_JOIN \
+            else f'(SELECT {selected_columns} FROM {table1[0]} {table1[1]},{table2[0]} {table2[1]} WHERE {match_condition})'
         
         new_table = (subquery, combined_alias)
         tables.remove(table1)
