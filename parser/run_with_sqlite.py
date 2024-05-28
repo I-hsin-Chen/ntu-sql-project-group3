@@ -92,6 +92,7 @@ if __name__ == '__main__':
             query_result, query_time = execute_a_query(all_possible_query[i], bf_min_time * 2)
             
             if(type(query_result) == str): 
+                print("=======================================================")
                 # Timeout or Error
                 continue
             
