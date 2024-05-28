@@ -102,6 +102,7 @@ if __name__ == '__main__':
             if(query_time < bf_min_time and query_result == bf_min_result):
                 bf_min_time = query_time
                 bf_query = all_possible_query[i]
+            print("=======================================================")
         
         print("The Brutal Force query:")
         print("Time:", bf_min_time)
