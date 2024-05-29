@@ -22,23 +22,23 @@ def to_cross_join(sql_query):
     '''
     Convert the given query to a cross join query.
     '''
-    
     # Regular expression to match the FROM clause and capture its content
     from_clause_pattern = r'FROM\s+([^;()]+)WHERE'
-    matches = re.search(from_clause_pattern, sql_query, re.IGNORECASE)
-    if matches:
-        from_clause = matches.group(1)
-        # Split the FROM clause by commas not enclosed in parentheses
+    matches = re.findall(from_clause_pattern, sql_query, flags=re.IGNORECASE)
+    for from_clause in matches:
         tables = re.split(r',(?![^()]*\))', from_clause)
-        # Recursively convert each subquery to a cross join query
-        tables = [to_cross_join(table) for table in tables]
         cross_join_clause = ' CROSS JOIN\n'.join(tables)
         
-        # Replace the old FROM clause with the new one
-        new_sql_query = re.sub(from_clause_pattern, f'FROM {cross_join_clause}WHERE', sql_query, flags=re.IGNORECASE)
-        return new_sql_query
-    else:
-        return sql_query
+        sql_query = re.sub(from_clause, cross_join_clause, sql_query, flags=re.IGNORECASE)
+    
+    pattern = r'\)([^;()]+)WHERE'
+    matches = re.findall(pattern, sql_query, flags=re.IGNORECASE)
+    for clause in matches:
+        new_clause = clause.replace(',', ' CROSS JOIN ')
+        sql_query = re.sub(clause, new_clause, sql_query, flags=re.IGNORECASE)
+    
+    return sql_query
+
 
 
 def extract_tables_and_conditions(query):

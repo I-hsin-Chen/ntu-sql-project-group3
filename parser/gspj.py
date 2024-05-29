@@ -89,7 +89,7 @@ def greedy_selective_pairwise_join(query):
 
 if __name__ == '__main__':
     query = """
-SELECT COUNT(*) FROM cast_info ci,title t,movie_info mi WHERE t.id=mi.movie_id AND t.id=ci.movie_id;
+SELECT COUNT(*) FROM movie_companies mc,movie_keyword mk,movie_info_idx mi_idx,title t,movie_info mi WHERE t.id=mi.movie_id AND t.id=mi_idx.movie_id AND t.id=mk.movie_id AND t.id=mc.movie_id AND mk.keyword_id<11604 AND t.kind_id=7 AND t.production_year=2004 AND mi.info_type_id=3;
 """
     print("The original query is :" + to_cross_join(query))
     gspj_query = greedy_selective_pairwise_join(query)
