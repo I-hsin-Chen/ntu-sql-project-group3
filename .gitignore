@@ -141,3 +141,7 @@ run.sh
 test.csv
 imdb-benchmark/
 imdb.db
+imdb_dataset_csv/
+parser/output.csv
+parser/tree
+parser/tree.png
