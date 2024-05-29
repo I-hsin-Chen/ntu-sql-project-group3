@@ -26,9 +26,9 @@ def Fetch_identifiers(stmt):
     parsed = sqlparse.parse(stmt)
     tokens = parsed[0].tokens
     identifiers = []
-    for token in tokens:
-        if isinstance(token, sqlparse.sql.Identifier):
-            identifiers.append(token)
+    # for token in tokens:
+    #     if isinstance(token, sqlparse.sql.Identifier):
+    #         identifiers.append(token)
     identifiers = [token for token in tokens if isinstance(token, (sqlparse.sql.Identifier, sqlparse.sql.IdentifierList))]
     identifiers_values = []
     for identifier in identifiers:
