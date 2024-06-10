@@ -1,6 +1,8 @@
 # DeepDB: DeepDB: Learn from Data, not from Queries!
 Original [DeepDB](https://github.com/DataManagementLab/deepdb-public.git) repository
+
 Our main effort is in the folder `parser`
+
 This [Google Drive](https://drive.google.com/drive/folders/11e19PH7jNOBdFVNzegg0uJcrT2xFCpTy) link contains imdb and pkl weights of it.
 
 ### Command
