@@ -6,7 +6,7 @@
 * This [Google Drive](https://drive.google.com/drive/folders/11e19PH7jNOBdFVNzegg0uJcrT2xFCpTy) link contains pretrained imdb and pkl weights of it.
 * Here is the file description in the folder `parser`
 
-![https://imgur.com/a/yVxOjNO](https://i.imgur.com/aAhTXIR.jpeg)
+<img src="https://i.imgur.com/aAhTXIR.jpeg" width="80%">
 
 ### Cardinality estimation command
 
