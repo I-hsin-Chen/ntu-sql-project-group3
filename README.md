@@ -2,10 +2,8 @@
 2024 NTU Project `資料庫系統-從SQL到NoSQL Database Management System — from SQL to NoSQL` Group 3
 
 * Check original [DeepDB](https://github.com/DataManagementLab/deepdb-public.git) repository to set up your environment.
-* Our main effort is in the folder `parser`
 * This [Google Drive](https://drive.google.com/drive/folders/11e19PH7jNOBdFVNzegg0uJcrT2xFCpTy) link contains pretrained imdb and pkl weights of it.
-* Here is the file description in the folder `parser`
-
+* Our main effort is in the folder `parser`. Below is the file descriptions of `parser`.
 <img src="https://i.imgur.com/aAhTXIR.jpeg" width="80%">
 
 ### Cardinality estimation command
