@@ -4,6 +4,9 @@
 * Check original [DeepDB](https://github.com/DataManagementLab/deepdb-public.git) repository to set up your environment.
 * Our main effort is in the folder `parser`
 * This [Google Drive](https://drive.google.com/drive/folders/11e19PH7jNOBdFVNzegg0uJcrT2xFCpTy) link contains pretrained imdb and pkl weights of it.
+* Here is the file description in the folder `parser`
+
+![https://imgur.com/a/yVxOjNO](https://i.imgur.com/aAhTXIR.jpeg)
 
 ### Cardinality estimation command
 
