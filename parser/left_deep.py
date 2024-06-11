@@ -6,10 +6,10 @@ import random
 from utils import to_cross_join, extract_tables_and_conditions, extract_related_conditions, cardinality_estimation
 
 
-def greedy_left_deep_join(query):
+def left_deep_join(query):
     '''
-    This function performs a greedy left deep join (GLDJ) on the given query.
-    The returned query is the final query after performing GLDJ.
+    This function performs a greedy left deep join on the given query.
+    The returned query is the final query after performing left deep join.
     '''
     
     # Extract all the tables and conditions from the query
@@ -100,5 +100,5 @@ if __name__ == '__main__':
     SELECT COUNT(*) FROM movie_keyword mk,title t,cast_info ci WHERE t.id=mk.movie_id AND t.id=ci.movie_id AND t.production_year>2010 AND mk.keyword_id=8200;
     """
     print("The original query is :" + to_cross_join(query))
-    gldj_query = greedy_left_deep_join(query)
-    print("The GLDJ query is :\n" + gldj_query)
+    left_deep_query =  left_deep_join(query)
+    print("The left deep query is :\n" + left_deep_query)

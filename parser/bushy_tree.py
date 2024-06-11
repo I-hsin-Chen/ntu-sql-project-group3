@@ -3,10 +3,10 @@ import itertools
 from sqlalchemy import create_engine, text
 from utils import *
 
-def greedy_selective_pairwise_join(query):
+def bushy_join(query):
     '''
-    This function performs a greedy selective pairwise join (GSPJ) on the given query.
-    The returned query is the final query after performing GSPJ.
+    This function performs a greedy selective pairwise join (bushy tree algorithm) on the given query.
+    The returned query is the final query after performing bushy tree algorithm.
     '''
     IS_LEFT_JOIN = False
     # Extract all the tables and conditions from the query
@@ -92,5 +92,5 @@ if __name__ == '__main__':
 SELECT COUNT(*) FROM movie_companies mc,movie_keyword mk,movie_info_idx mi_idx,title t,movie_info mi WHERE t.id=mi.movie_id AND t.id=mi_idx.movie_id AND t.id=mk.movie_id AND t.id=mc.movie_id AND mk.keyword_id<11604 AND t.kind_id=7 AND t.production_year=2004 AND mi.info_type_id=3;
 """
     print("The original query is :" + to_cross_join(query))
-    gspj_query = greedy_selective_pairwise_join(query)
-    print("The GSPJ query is :\n" + gspj_query)
+    bushy_query = bushy_join(query)
+    print("The bushy query is :\n" + bushy_query)

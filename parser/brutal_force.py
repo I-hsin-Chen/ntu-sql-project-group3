@@ -7,8 +7,7 @@ import csv
 
 def Brutal_Force(query):
     '''
-    This function performs a greedy selective pairwise join (GSPJ) on the given query.
-    The returned query is the final query after performing GSPJ.
+    This function will generate all the possible queries trees and return a list of them.
     '''
     query_list = []
     # Extract all the tables and conditions from the query
@@ -98,12 +97,7 @@ if __name__ == '__main__':
     query = """
 SELECT COUNT(*) FROM title t,movie_info mi,movie_info_idx mi_idx,cast_info ci,movie_keyword mk WHERE t.id=mi.movie_id AND t.id=mi_idx.movie_id AND t.id=ci.movie_id AND t.id=mk.movie_id AND mi.info_type_id=3 AND mi_idx.info_type_id=100 AND t.production_year>2010;"""
     all_possible_query = Brutal_Force(query)
-    print("possible query : ")
+    print("All possible query : ")
     print (all_possible_query)
-
-    # with open('./bf_output/output.txt', 'w') as file:
-    #     for query in all_possible_query:
-    #         file.write(query + '\n')
-    #         print(query)
     
     
