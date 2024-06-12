@@ -1,5 +1,6 @@
-# DeepDB: DeepDB: Learn from Data, not from Queries!
+# NTU EE5178 Group3 -- Query Optimization through Cardinality Estimation
 2024 NTU Project `資料庫系統-從SQL到NoSQL Database Management System — from SQL to NoSQL` Group 3
+
 
 * Check original [DeepDB](https://github.com/DataManagementLab/deepdb-public.git) repository to set up your environment.
 * This [Google Drive](https://drive.google.com/drive/folders/11e19PH7jNOBdFVNzegg0uJcrT2xFCpTy) link contains pretrained imdb and pkl weights of it.
@@ -30,5 +31,5 @@ Add the desire query string in `queries = []` in main function, then run :
 ```
 python run_with_sqlite.py
 ```
-* Note that you have add your two `.pkl` files in `../imdb-benchmark/spn_ensembles`
+* Note that you have add your two `.pkl` files in `./imdb-benchmark/spn_ensembles` and `imdb.db` in the parent folder.
 * The result will be generated in `output.csv`.

@@ -1,7 +1,0 @@
-conda install freetype
-pip install -r requirements_tmp.txt
-pip install pandas
-pip install psycopg2-binary
-conda install h5py
-https://blog.csdn.net/weixin_42880082/article/details/126230526
-pip install cryptography matplotlib numexpr pycrypto scikit-learn scipy tables
