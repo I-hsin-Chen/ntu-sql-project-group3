@@ -1,4 +1,4 @@
-# DeepDB: DeepDB: Learn from Data, not from Queries!
+# NTU EE5178 Group3
 2024 NTU Project `資料庫系統-從SQL到NoSQL Database Management System — from SQL to NoSQL` Group 3
 
 * Check original [DeepDB](https://github.com/DataManagementLab/deepdb-public.git) repository to set up your environment.
