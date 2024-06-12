@@ -1,4 +1,4 @@
-Query no.,Query,Original Run time,GSPJ Run time,GLDJ Run time,Optimized (GT) Run time,Performance of Bushy,Performance of Left-Deep,GT SPEED,Efficacy of Bushy,Efficacy of Left-Deep
+Query no.,Query,Original Run time,Bushy Run time,Left Deep Run time,Optimized (GT) Run time,Performance of Bushy,Performance of Left-Deep,GT SPEED,Efficacy of Bushy,Efficacy of Left-Deep
 1,"SELECT COUNT(*) FROM movie_keyword mk,title t,cast_info ci WHERE t.id=mk.movie_id AND t.id=ci.movie_id AND 
 t.production_year>2010 AND mk.keyword_id=8200;",264.116,153.295,253.538,151.321,98.71%,59.68%,42.71%,41.96%,4.01%
 2,"SELECT COUNT(*) FROM title t,movie_info mi,movie_info_idx mi_idx,movie_keyword mk WHERE t.id=mi.movie_id AND t.id=mk.movie_id AND t.id=mi_idx.movie_id AND t.production_year>2010 AND t.kind_id=1 AND mi.info_type_id=8 AND mi_idx.info_type_id=101;",5.09,5.548,5.849,5.129,92.45%,87.69%,-0.77%,-9.00%,-14.91%
